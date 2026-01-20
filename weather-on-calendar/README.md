@@ -15,3 +15,7 @@
 3. 修改HTTP Request的URL中的经纬度以及OpenWeatherMap API
 4. 修改Weather to CalDAV中的代码内的配置区域部分
 5. 手动触发测试
+
+## 补充说明
+
+- 我设置的Schedule是半小时一次，OpenWeather有每天1000次的免费额度，因此一定是够用的，有需要可以自行调整
