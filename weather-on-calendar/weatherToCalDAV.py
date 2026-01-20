@@ -12,11 +12,11 @@ https://openweathermap.org/weather-conditions
 
 import json
 import hashlib
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 from zoneinfo import ZoneInfo
 
 import caldav
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event, Alarm
 
 # ============ 配置区域 ============
 CALDAV_URL = "https://caldav.example.com/testuser"  # CalDAV 服务器地址
@@ -162,6 +162,15 @@ def create_ical_event(weather: dict) -> Event:
 
     event.add("description", "\n".join(desc_lines))
     event.add("dtstamp", datetime.now())
+
+    # Apple Calendar can apply per-calendar default alerts even if no VALARM
+    # exists. This "disabled" alarm pattern suppresses those defaults.
+    alarm = Alarm()
+    alarm.add("action", "NONE")
+    alarm.add("trigger", datetime(1976, 4, 1, 0, 55, 45, tzinfo=timezone.utc))
+    alarm.add("x-apple-default-alarm", "TRUE")
+    alarm.add("x-apple-local-default-alarm", "TRUE")
+    event.add_component(alarm)
 
     return event
 

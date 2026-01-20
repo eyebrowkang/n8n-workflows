@@ -2,6 +2,8 @@
 
 在日历上显示天气
 
+⚠️注意：[weatherOnCalendar.json](./weatherOnCalendar.json) 中的Python代码可能不是最新，最新代码参考[weatherToCalDAV.py](./weatherToCalDAV.py)
+
 ## 必备条件
 
 - 一个[OpenWeather](https://openweathermap.org/)的凭证
