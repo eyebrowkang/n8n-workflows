@@ -63,6 +63,7 @@ def parse_weather_data(data: dict) -> list[dict]:
     """
     events = []
     tz = ZoneInfo(data["timezone"])
+    tz_name = data.get("timezone")
 
     # 解析当前天气 (today)
     current = data["current"]
@@ -84,6 +85,7 @@ def parse_weather_data(data: dict) -> list[dict]:
         "pop": None,
         "snow": current.get("snow", {}).get("1h"),
         "rain": current.get("rain", {}).get("1h"),
+        "timezone": tz_name,
     })
 
     # 解析未来几天天气
@@ -110,9 +112,18 @@ def parse_weather_data(data: dict) -> list[dict]:
             "pop": day.get("pop"),  # 降水概率
             "snow": day.get("snow"),
             "rain": day.get("rain"),
+            "timezone": tz_name,
         })
 
     return events
+
+def _timezone_from_name(name: str | None) -> timezone:
+    if not name:
+        return timezone.utc
+    try:
+        return ZoneInfo(name)
+    except Exception:
+        return timezone.utc
 
 
 def create_ical_event(weather: dict) -> Event:
@@ -159,6 +170,9 @@ def create_ical_event(weather: dict) -> Event:
         desc_lines.append(f"降雨量: {weather['rain']} mm")
 
     desc_lines.append(f"\n{weather['summary']}")
+    tz_name = weather.get("timezone") or "UTC"
+    added_at = datetime.now(_timezone_from_name(weather.get("timezone")))
+    desc_lines.append(f"添加时间: {added_at.strftime('%Y-%m-%d %H:%M:%S')} ({tz_name})")
 
     event.add("description", "\n".join(desc_lines))
     event.add("dtstamp", datetime.now())
